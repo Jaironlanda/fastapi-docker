@@ -1,0 +1,1 @@
+DATABASE_URL=postgresql+asyncpg://root:root@db:5432/crud_db
