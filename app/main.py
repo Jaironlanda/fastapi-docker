@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Query, Depends
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,6 +18,11 @@ async def create(user: UserCreate, session: AsyncSession = Depends(get_session))
     await session.commit()
     await session.refresh(user)
     return user
+
+@app.get('/userlist/')
+async def get_list(offset: int = 0, limit: int = Query(default=100, lte=100), session: AsyncSession = Depends(get_session)):
+    user_list = await session.execute(select(User).offset(offset).limit(limit))
+    return user_list.scalars().all()
 
 @app.get('/user/{id}', response_model=UserRead)
 async def get_user(id: int, session: AsyncSession = Depends(get_session)):
